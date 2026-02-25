@@ -9,7 +9,8 @@ import {
     Layers,
     Zap,
     Shield,
-    Coins
+    Coins,
+    LockKeyhole as LockIcon
 } from 'lucide-react'
 import Home from './pages/Home'
 
@@ -42,7 +43,7 @@ function PinGate({ onUnlock }) {
                 style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1.5rem', backdropFilter: 'blur(20px)' }}>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
                     style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)' }}>
-                    <Lock size={28} className="text-violet-400" />
+                    <LockIcon size={28} className="text-violet-400" />
                 </div>
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: 'Orbitron, sans-serif' }}>MASTER</h1>
