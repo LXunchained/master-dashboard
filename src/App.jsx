@@ -16,6 +16,74 @@ import Home from './pages/Home'
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE = IS_LOCAL ? 'http://127.0.0.1:5001' : null;
 
+// ── Change this to any PIN you want ──────────────────────────────────────────
+const DASHBOARD_PIN = '8074';
+const SESSION_KEY = 'dash_auth';
+
+function PinGate({ onUnlock }) {
+    const [pin, setPin] = useState('');
+    const [error, setError] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (pin === DASHBOARD_PIN) {
+            sessionStorage.setItem(SESSION_KEY, '1');
+            onUnlock();
+        } else {
+            setError(true);
+            setPin('');
+            setTimeout(() => setError(false), 1500);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+            <div className="w-80 p-8 flex flex-col items-center gap-6"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1.5rem', backdropFilter: 'blur(20px)' }}>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                    style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)' }}>
+                    <Lock size={28} className="text-violet-400" />
+                </div>
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: 'Orbitron, sans-serif' }}>MASTER</h1>
+                    <p className="text-slate-500 text-sm">Enter PIN to access Command Center</p>
+                </div>
+                <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3">
+                    <input
+                        autoFocus
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={8}
+                        value={pin}
+                        onChange={(e) => setPin(e.target.value)}
+                        placeholder="••••"
+                        style={{
+                            width: '100%', textAlign: 'center', fontSize: '1.5rem',
+                            letterSpacing: '0.5em', background: 'rgba(15,23,42,0.5)',
+                            border: `1px solid ${error ? '#ef4444' : 'rgba(255,255,255,0.1)'}`,
+                            borderRadius: '0.75rem', padding: '0.75rem 1rem', color: 'white',
+                            outline: 'none', transition: 'border-color 0.2s'
+                        }}
+                    />
+                    {error && <p style={{ color: '#f87171', fontSize: '0.75rem', textAlign: 'center' }}>Incorrect PIN — try again</p>}
+                    <button
+                        type="submit"
+                        style={{
+                            width: '100%', padding: '0.75rem', borderRadius: '0.75rem',
+                            background: '#7c3aed', color: 'white', fontWeight: 'bold',
+                            border: 'none', cursor: 'pointer', transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={e => e.target.style.background = '#6d28d9'}
+                        onMouseLeave={e => e.target.style.background = '#7c3aed'}
+                    >
+                        Unlock
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+}
+
 function Sidebar() {
     const location = useLocation();
     const [systemStatus, setSystemStatus] = useState(IS_LOCAL ? "Checking..." : "Remote View");
@@ -84,6 +152,14 @@ function Sidebar() {
 }
 
 function App() {
+    const [unlocked, setUnlocked] = useState(
+        IS_LOCAL || sessionStorage.getItem(SESSION_KEY) === '1'
+    );
+
+    if (!unlocked) {
+        return <PinGate onUnlock={() => setUnlocked(true)} />;
+    }
+
     return (
         <div className="flex min-h-screen bg-[#020617] text-slate-200">
             <Sidebar />
